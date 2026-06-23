@@ -112,10 +112,10 @@ export default function ClientsPage() {
         
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className={`flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl transition-all ${
+          className={`flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-xl transition-all border ${
             showAddForm
-              ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400'
-              : 'bg-tg-button text-tg-button-text'
+              ? 'bg-rose-100 border-rose-200 text-rose-700 dark:bg-rose-950 dark:border-rose-900 dark:text-rose-300'
+              : 'bg-tg-button border-transparent text-tg-button-text'
           }`}
         >
           {showAddForm ? (
@@ -218,16 +218,14 @@ export default function ClientsPage() {
               <div className="flex items-center space-x-2">
                 {/* Быстрые контакты */}
                 {client.phone && (
-                  <>
-                    <a
-                      href={`tel:${client.phone}`}
-                      onClick={(e) => e.stopPropagation()} // Исключаем переход по ссылке карточки
-                      className="p-2 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-500 hover:text-tg-button rounded-xl transition-colors"
-                      title="Позвонить"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                    </a>
-                  </>
+                  <a
+                    href={`tel:${client.phone}`}
+                    onClick={(e) => e.stopPropagation()} // Исключаем переход по ссылке карточки
+                    className="p-2.5 bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 border border-pink-100/70 dark:border-pink-900/50 text-tg-button dark:text-pink-300 rounded-xl transition-all shadow-sm flex items-center justify-center"
+                    title="Позвонить"
+                  >
+                    <Phone className="w-4 h-4 stroke-[2.5]" />
+                  </a>
                 )}
                 
                 <ChevronRight className="w-4 h-4 text-tg-hint group-hover:translate-x-1 transition-transform" />
