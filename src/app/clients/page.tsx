@@ -221,7 +221,7 @@ export default function ClientsPage() {
                   <a
                     href={`tel:${client.phone}`}
                     onClick={(e) => e.stopPropagation()} // Исключаем переход по ссылке карточки
-                    className="p-2.5 bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 border border-pink-100/70 dark:border-pink-900/50 text-tg-button dark:text-pink-300 rounded-xl transition-all shadow-sm flex items-center justify-center"
+                    className="p-2.5 bg-white hover:bg-pink-50/50 dark:bg-slate-900 dark:hover:bg-pink-950/20 border border-pink-200 dark:border-pink-900/60 text-tg-button dark:text-pink-300 rounded-xl transition-all shadow-sm flex items-center justify-center"
                     title="Позвонить"
                   >
                     <Phone className="w-4 h-4 stroke-[2.5]" />

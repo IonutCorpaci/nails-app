@@ -229,26 +229,26 @@ export default function ClientDetailPage() {
           <div className="flex flex-col gap-2 pt-2">
             <a
               href={`tel:${client.phone}`}
-              className="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-tg-text text-sm py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-slate-350 dark:border-slate-700 shadow-sm"
+              className="w-full bg-white hover:bg-pink-50/50 dark:bg-slate-900 dark:hover:bg-pink-950/20 text-tg-button dark:text-pink-300 text-sm py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-pink-200 dark:border-pink-900/60 shadow-sm"
             >
-              <Phone className="w-4 h-4 text-tg-button stroke-[2.5]" /> Позвонить по телефону
+              <Phone className="w-4 h-4 stroke-[2.5]" /> Позвонить по телефону
             </a>
             <div className="flex gap-2">
               <a
                 href={`https://wa.me/${client.phone.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-3 px-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-emerald-700 shadow-sm"
+                className="flex-1 bg-white hover:bg-emerald-50/50 dark:bg-slate-900 dark:hover:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 text-xs py-3 px-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-emerald-200 dark:border-emerald-900/60 shadow-sm"
               >
-                <MessageSquare className="w-4 h-4 text-white fill-white/10" /> WhatsApp
+                <MessageSquare className="w-4 h-4 stroke-[2.5]" /> WhatsApp
               </a>
               <a
                 href={`https://t.me/+${client.phone.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 bg-sky-500 hover:bg-sky-600 text-white text-xs py-3 px-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-sky-600 shadow-sm"
+                className="flex-1 bg-white hover:bg-sky-50/50 dark:bg-slate-900 dark:hover:bg-sky-950/20 text-sky-600 dark:text-sky-400 text-xs py-3 px-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 border border-sky-200 dark:border-sky-900/60 shadow-sm"
               >
-                <MessageSquare className="w-4 h-4 text-white fill-white/10" /> Telegram
+                <MessageSquare className="w-4 h-4 stroke-[2.5]" /> Telegram
               </a>
             </div>
           </div>

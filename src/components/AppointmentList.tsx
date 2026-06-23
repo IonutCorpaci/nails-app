@@ -205,29 +205,29 @@ export default function AppointmentList() {
               </div>
 
               {/* Панель быстрых действий */}
-              <div className="flex gap-1.5 pt-2 border-t border-slate-50 dark:border-slate-900/60 justify-end w-full">
+              <div className="flex gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/60 justify-end w-full">
                 {app.status === 'PLANNED' && (
                   <>
                     <button
                       onClick={() => updateStatus(app.id, 'COMPLETED')}
-                      className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer"
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-900/50 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer"
                     >
-                      <Check className="w-3.5 h-3.5" /> Готово
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Готово
                     </button>
                     <button
                       onClick={() => updateStatus(app.id, 'CANCELLED')}
-                      className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/20 dark:text-rose-400 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer"
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/50 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5" /> Отмена
+                      <X className="w-3.5 h-3.5 stroke-[2.5]" /> Отмена
                     </button>
                   </>
                 )}
                 
                 <Link
                   href={`/appointments/${app.id}/edit`}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95"
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-[11px] sm:text-xs bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 border border-slate-200 dark:border-slate-800 py-2.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all active:scale-95"
                 >
-                  <Edit2 className="w-3.5 h-3.5" /> Изменить
+                  <Edit2 className="w-3.5 h-3.5 stroke-[2.5]" /> Изменить
                 </Link>
               </div>
             </div>
