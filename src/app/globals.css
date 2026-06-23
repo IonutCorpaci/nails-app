@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tg-bg: var(--tg-bg-color, #f8fafc);
+  --color-tg-secondary-bg: var(--tg-secondary-bg-color, #ffffff);
+  --color-tg-text: var(--tg-text-color, #0f172a);
+  --color-tg-hint: var(--tg-hint-color, #64748b);
+  --color-tg-link: var(--tg-link-color, #db2777);
+  --color-tg-button: var(--tg-button-color, #db2777);
+  --color-tg-button-text: var(--tg-button-text-color, #ffffff);
+  
+  --color-status-planned: #3b82f6;
+  --color-status-completed: #10b981;
+  --color-status-cancelled: #ef4444;
+  
+  --color-loc-home: #8b5cf6;
+  --color-loc-salon: #f59e0b;
+}
+
+@layer base {
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--tg-bg-color, #f8fafc);
+    color: var(--tg-text-color, #0f172a);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Исправление переполнения и некорректного размера полей даты и времени в iOS Safari */
+  input[type="date"],
+  input[type="time"] {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  input::-webkit-date-and-time-value {
+    min-height: 1.5em;
+    text-align: left;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Утилиты для плавной анимации и мобильного интерфейса */
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 4rem);
+}

@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Client {
+  id           String        @id @default(uuid())
+  name         String        // Имя клиента
+  phone        String?       // Номер телефона (опционально)
+  notes        String?       // Заметки о предпочтениях клиента (аллергии, цвета и т.д.)
+  appointments Appointment[] // Записи клиента
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  clientId    String?           // Ссылка на клиента (может быть Null для быстрой записи без карточки)
+  client      Client?           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  // Дублируем имя/телефон для удобства или если клиент не создан в базе
+  clientName  String
+  clientPhone String?
+  service     String            // Название услуги (например, "Маникюр + гель-лак")
+  dateTime    DateTime          // Дата и время записи
+  price       Float             // Стоимость
+  location    String            // "HOME" (дома) или "SALON" (в салоне)
+  status      String            // "PLANNED" (запланирована), "COMPLETED" (выполнена), "CANCELLED" (отменена)
+  notes       String?           // Заметка к конкретной записи
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  @@index([dateTime])
+}
