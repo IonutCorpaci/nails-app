@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { 
   ArrowLeft, Phone, Calendar, ClipboardList, Clock, 
-  MapPin, Edit3, Save, Check, X, Award, TrendingUp, AlertCircle, MessageSquare
+  MapPin, Edit3, Save, Check, X, Award, TrendingUp, AlertCircle, MessageSquare,
+  Trash2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -46,6 +47,10 @@ export default function ClientDetailPage() {
   const [phoneDraft, setPhoneDraft] = useState('');
 
   const [isSaving, setIsSaving] = useState(false);
+
+  // Состояния для удаления клиента
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchClientDetails = async () => {
     setLoading(true);
@@ -107,6 +112,26 @@ export default function ClientDetailPage() {
       console.error('Ошибка обновления профиля:', error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/clients/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        router.push('/clients');
+        router.refresh();
+      } else {
+        alert('Не удалось удалить клиента');
+      }
+    } catch (error) {
+      console.error('Ошибка при удалении клиента:', error);
+      alert('Произошла ошибка при удалении');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -253,6 +278,39 @@ export default function ClientDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Зона удаления / Dangerous Zone */}
+        <div className="pt-4 border-t border-slate-100/60 dark:border-slate-800/40 space-y-2">
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 font-semibold py-2.5 rounded-xl border border-rose-100 dark:border-rose-950 flex items-center justify-center gap-2 text-xs transition-all active:scale-95 cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" /> Удалить карту клиента
+            </button>
+          ) : (
+            <div className="bg-rose-50/50 dark:bg-rose-950/10 border border-rose-200/50 dark:border-rose-900/30 p-4 rounded-xl space-y-3">
+              <p className="text-xs font-semibold text-rose-800 dark:text-rose-400 text-center">
+                Вы действительно хотите удалить этого клиента и всю его историю визитов?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDeleteClient}
+                  disabled={isDeleting}
+                  className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-lg text-xs transition-colors disabled:opacity-50"
+                >
+                  {isDeleting ? 'Удаление...' : 'Да, удалить'}
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-tg-text font-bold py-2 rounded-lg text-xs transition-colors"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Статистика визитов */}
