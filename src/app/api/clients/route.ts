@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
-// GET /api/clients — получение списка клиентов с возможностью текстового поиска
+// GET /api/clients — получение списка клиентов с возможностью текстового поиска для текущего пользователя
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
 
     const clients = await db.client.findMany({
       where: {
+        userId: session.userId,
         OR: [
-          { name: { contains: query } },
-          { phone: { contains: query } },
+          { name: { contains: query, mode: 'insensitive' } },
+          { phone: { contains: query, mode: 'insensitive' } },
         ],
       },
       orderBy: {
@@ -26,9 +33,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/clients — создание нового клиента (карточки клиента)
+// POST /api/clients — создание нового клиента (карточки клиента) для текущего пользователя
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { name, phone, notes } = body;
 
@@ -38,6 +50,7 @@ export async function POST(request: NextRequest) {
 
     const client = await db.client.create({
       data: {
+        userId: session.userId,
         name,
         phone,
         notes,

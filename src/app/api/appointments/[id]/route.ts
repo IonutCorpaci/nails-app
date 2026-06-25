@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
 // GET /api/appointments/[id] — получение данных одной записи
 export async function GET(
@@ -7,10 +8,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
 
-    const appointment = await db.appointment.findUnique({
-      where: { id },
+    // Ищем запись с учетом userId
+    const appointment = await db.appointment.findFirst({
+      where: { id, userId: session.userId },
       include: {
         client: true,
       },
@@ -33,10 +40,23 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // В Next.js 15 параметры маршрута (params) являются асинхронными, поэтому мы должны вызвать await params.
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Проверяем принадлежность записи пользователю
+    const existing = await db.appointment.findFirst({
+      where: { id, userId: session.userId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Запись не найдена или доступ запрещен' }, { status: 404 });
+    }
+
     const body = await request.json();
-    
     const {
       clientId,
       clientName,
@@ -80,7 +100,21 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Проверяем принадлежность записи пользователю
+    const existing = await db.appointment.findFirst({
+      where: { id, userId: session.userId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Запись не найдена или доступ запрещен' }, { status: 404 });
+    }
 
     await db.appointment.delete({
       where: { id },

@@ -10,11 +10,24 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id           String        @id @default(uuid())
+  username     String        @unique // Уникальный логин (например, "elena")
+  passwordHash String        // Захешированный пароль
+  name         String        // Имя мастера (для приветствия)
+  clients      Client[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
 model Client {
   id           String        @id @default(uuid())
+  userId       String?       // Опционально для безопасного перехода
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String        // Имя клиента
   phone        String?       // Номер телефона (опционально)
-  notes        String?       // Заметки о предпочтениях клиента (аллергии, цвета и т.д.)
+  notes        String?       // Заметки о предпочтениях клиента
   appointments Appointment[] // Записи клиента
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -22,10 +35,11 @@ model Client {
 
 model Appointment {
   id          String            @id @default(uuid())
-  clientId    String?           // Ссылка на клиента (может быть Null для быстрой записи без карточки)
+  userId      String?           // Опционально для безопасного перехода
+  user        User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId    String?           // Ссылка на клиента (может быть null)
   client      Client?           @relation(fields: [clientId], references: [id], onDelete: Cascade)
   
-  // Дублируем имя/телефон для удобства или если клиент не создан в базе
   clientName  String
   clientPhone String?
   service     String            // Название услуги (например, "Маникюр + гель-лак")

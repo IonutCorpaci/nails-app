@@ -1,18 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
-// В Next.js App Router API-эндпоинты пишутся в файлах route.ts.
-// Мы определяем асинхронные функции с именами HTTP-методов (GET, POST и т.д.).
-
-// GET /api/appointments — получение списка записей с возможностью фильтрации по датам
+// GET /api/appointments — получение списка записей с возможностью фильтрации по датам для текущего пользователя
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const from = searchParams.get('from');
     const to = searchParams.get('to');
 
-    // Формируем условие фильтрации. Если переданы даты "от" и "до", фильтруем по ним.
-    const where: any = {};
+    // Фильтруем записи по userId авторизованного пользователя
+    const where: any = {
+      userId: session.userId,
+    };
+    
     if (from && to) {
       where.dateTime = {
         gte: new Date(from),
@@ -37,9 +43,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/appointments — создание новой записи
+// POST /api/appointments — создание новой записи для текущего пользователя
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const body = await request.json();
     const {
       clientId,
@@ -60,6 +71,7 @@ export async function POST(request: NextRequest) {
 
     const appointment = await db.appointment.create({
       data: {
+        userId: session.userId,
         clientId: clientId || null,
         clientName,
         clientPhone,

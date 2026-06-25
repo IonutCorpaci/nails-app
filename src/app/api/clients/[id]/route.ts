@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
 // GET /api/clients/[id] — получение данных конкретного клиента вместе с историей визитов
 export async function GET(
@@ -7,12 +8,18 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
 
-    const client = await db.client.findUnique({
-      where: { id },
+    const client = await db.client.findFirst({
+      where: { id, userId: session.userId },
       include: {
         appointments: {
+          where: { userId: session.userId }, // Также фильтруем связанные записи
           orderBy: {
             dateTime: 'desc', // История визитов от новых к старым
           },
@@ -37,7 +44,22 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Проверяем принадлежность
+    const existing = await db.client.findFirst({
+      where: { id, userId: session.userId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Клиент не найден или доступ запрещен' }, { status: 404 });
+    }
+
     const body = await request.json();
     const { name, phone, notes } = body;
 
@@ -63,7 +85,21 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Проверяем принадлежность
+    const existing = await db.client.findFirst({
+      where: { id, userId: session.userId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Клиент не найден или доступ запрещен' }, { status: 404 });
+    }
 
     await db.client.delete({
       where: { id },

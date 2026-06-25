@@ -2,20 +2,35 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Sparkles, TrendingUp, Calendar } from 'lucide-react';
+import { Plus, Sparkles, TrendingUp, Calendar, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { useTelegram } from '@/components/TelegramProvider';
 import AppointmentList from '@/components/AppointmentList';
 
 // Главный экран приложения.
-// Мы используем 'use client', так как этот компонент использует хук useTelegram (клиентское SDK)
-// и отображает персонализированную информацию о мастере, а также динамическую статистику.
 export default function Home() {
-  const { user } = useTelegram();
+  const { user: tgUser } = useTelegram();
+  const [currentUser, setCurrentUser] = useState<{ name: string } | null>(null);
   const [statsPeriod, setStatsPeriod] = useState<'day' | 'week' | 'month'>('day');
   const [stats, setStats] = useState({ count: 0, earned: 0, planned: 0 });
   const [currentDateStr, setCurrentDateStr] = useState('');
+
+  // Загружаем имя текущего пользователя
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUser(data);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке пользователя:', error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Загружаем статистику при загрузке страницы или при изменении периода
   useEffect(() => {
@@ -88,18 +103,34 @@ export default function Home() {
     fetchStats();
   }, [statsPeriod]);
 
+  const handleLogout = async () => {
+    if (confirm('Вы уверены, что хотите выйти из кабинета?')) {
+      const response = await fetch('/api/auth/logout', { method: 'POST' });
+      if (response.ok) {
+        window.location.href = '/login';
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Шапка приветствия с именем из Telegram */}
-      <div className="flex justify-between items-start">
+      {/* Шапка приветствия с именем мастера и кнопкой выхода */}
+      <div className="flex justify-between items-center">
         <div>
           <span className="text-xs text-tg-hint uppercase tracking-wider font-semibold">
             {currentDateStr || 'Сегодня'}
           </span>
           <h1 className="text-2xl font-bold text-tg-text flex items-center gap-1.5 mt-0.5 capitalize">
-            Привет, {user?.first_name || 'Мастер'}! <Sparkles className="w-5 h-5 text-tg-button fill-tg-button/20" />
+            Привет, {currentUser?.name || tgUser?.first_name || 'Мастер'}! <Sparkles className="w-5 h-5 text-tg-button fill-tg-button/20" />
           </h1>
         </div>
+        <button
+          onClick={handleLogout}
+          className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-red-500 rounded-xl transition-all cursor-pointer border border-slate-200/50 dark:border-slate-700/50 active:scale-95 flex items-center justify-center"
+          title="Выйти из аккаунта"
+        >
+          <LogOut className="w-4.5 h-4.5" />
+        </button>
       </div>
 
       {/* Улучшенная карточка статистики с выбором периода */}

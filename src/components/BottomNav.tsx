@@ -9,6 +9,10 @@ import { Calendar, LayoutDashboard, Users } from 'lucide-react';
 export default function BottomNav() {
   const pathname = usePathname();
 
+  if (pathname === '/login' || pathname === '/signup') {
+    return null;
+  }
+
   const navItems = [
     {
       label: 'Главная',

@@ -1,0 +1,145 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Lock, User, Sparkles, AlertCircle } from 'lucide-react';
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Что-то пошло не так');
+      }
+
+      // Redirect to main page on success
+      router.push('/');
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || 'Ошибка входа');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
+      {/* Background soft gradients */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-rose-50 to-slate-50 dark:from-slate-950 dark:to-slate-900 -z-10"></div>
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pink-300/30 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-rose-300/20 rounded-full blur-3xl -z-10"></div>
+
+      <div className="w-full max-w-sm space-y-6">
+        {/* Logo and Greeting */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex p-3 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl shadow-md text-white">
+            <Sparkles className="w-8 h-8 animate-pulse" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">
+            Nails App
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Кабинет Мастера Маникюра
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20 dark:border-slate-800/50 space-y-6">
+          <div className="text-center">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">Вход в кабинет</h2>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+              Введите ваш логин и пароль для продолжения
+            </p>
+          </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-3 flex items-start gap-2.5 text-xs text-red-600 dark:text-red-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Username Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 px-1">
+                Логин
+              </label>
+              <div className="relative">
+                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  required
+                  placeholder="Имя пользователя"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all dark:text-white"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 px-1">
+                Пароль
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all dark:text-white"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold rounded-2xl text-sm shadow-md hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex justify-center items-center"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                'Войти'
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer Link */}
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Еще нет аккаунта?{' '}
+          <Link
+            href="/signup"
+            className="text-pink-500 hover:underline font-bold transition-all"
+          >
+            Зарегистрироваться
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
